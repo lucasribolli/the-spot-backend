@@ -16,11 +16,12 @@ app.listen(PORT, function () {
 app.get('/', async function (req, res, next) {
   try {
     var response = new Object()
-    response.authorized = true
+    response.test = await db.query('SELECT * FROM test')
     res.send(response)
   } catch (err) {
+    console.log('err -> ' + err)
     var responseError = new Object()
-    responseError.authorized = false
+    responseError.error = err
     res.send(responseError)
   }
 })

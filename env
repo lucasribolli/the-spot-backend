@@ -1,2 +1,2 @@
-PRODUCTION_POSTGRES_URI=""
+PRODUCTION_POSTGRES_URI="postgres://hpiukcxb:qMO3ODn6EbY-hXMKxUGmwZLpOhOqGtxo@tuffi.db.elephantsql.com/hpiukcxb"
 DEV_POSTGRES_URI=""
