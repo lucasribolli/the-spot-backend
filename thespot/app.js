@@ -2,7 +2,6 @@ const express = require('express')
 var bodyParser = require('body-parser')
 const cors = require('cors')
 const db = require('./db/index')
-const responses = require('./utils/responses')
 
 var app = express()
 app.use(cors())
@@ -14,12 +13,14 @@ app.listen(PORT, function () {
   console.log('Server is running...')
 })
 
-app.get('/auth', function (req, res, next) {
+app.get('/', async function (req, res, next) {
   try {
     var response = new Object()
     response.authorized = true
     res.send(response)
   } catch (err) {
-    res.send(responses.fail(err))
+    var responseError = new Object()
+    responseError.authorized = false
+    res.send(responseError)
   }
 })
