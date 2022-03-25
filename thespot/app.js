@@ -13,13 +13,15 @@ app.listen(PORT, function () {
   console.log('Server is running...')
 })
 
-app.get('/', async function (req, res, next) {
+app.get('/auth', async function (req, res, next) {
   try {
+    var email = req.query.email
+    var employees = await db.query(
+      'SELECT EMAIL FROM EMPLOYEES WHERE EMAIL = $1', [email])
     var response = new Object()
-    response.test = await db.query('SELECT * FROM test')
+    response.authorized = employees.rowCount > 0
     res.send(response)
   } catch (err) {
-    console.log('err -> ' + err)
     var responseError = new Object()
     responseError.error = err
     res.send(responseError)
