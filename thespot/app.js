@@ -18,12 +18,12 @@ app.get('/auth', async function (req, res, next) {
     var email = req.query.email
     var employees = await db.query(
       'SELECT EMAIL FROM EMPLOYEES WHERE EMAIL = $1', [email])
-    var response = new Object()
-    response.authorized = employees.rowCount > 0
-    res.send(response)
+    res.send({
+      authorized: employees.rowCount > 0
+    })
   } catch (err) {
-    var responseError = new Object()
-    responseError.error = err
-    res.send(responseError)
+    res.send({
+      error: err
+    })
   }
 })
