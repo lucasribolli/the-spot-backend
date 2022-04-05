@@ -27,3 +27,18 @@ app.get('/auth', async function (req, res, next) {
     })
   }
 })
+
+app.get('/reservation', async function (req, res, next) {
+  try {
+    var email = req.query.email
+    var reservations = await db.query(
+      'SELECT * FROM RESERVATIONS WHERE EMPLOYEE_EMAIL = $1', [email])
+    res.send({
+      reservations: reservations.rows
+    })
+  } catch (err) {
+    res.send({
+      error: err
+    })
+  }
+})
