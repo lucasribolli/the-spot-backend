@@ -1,12 +1,11 @@
 const express = require('express')
-var bodyParser = require('body-parser')
 const cors = require('cors')
 const db = require('./db/index')
 const moment = require('moment')
 
 var app = express()
 app.use(cors())
-app.use(bodyParser.json())
+app.use(express.json())
 PORT = process.env.PORT || 4000
 
 app.set('port', PORT)
