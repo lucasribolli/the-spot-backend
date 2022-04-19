@@ -31,14 +31,14 @@ app.get('/auth', async function (req, res, next) {
 app.get('/hasReservation', async function (req, res, next) {
   try {
     var email = req.query.email
-    var reservations = await db.query(
+    var reservation = await db.query(
       'SELECT * FROM RESERVATIONS '+
       'WHERE EMPLOYEE_EMAIL = $1 '+
       'AND reservation_date >= $2' +
       'AND status = $3', 
       [email, moment().format(), 'RESERVED'])
     res.send({
-      hasReservation: reservations.rowCount > 0
+      hasReservation: reservation.rowCount > 0
     })
   } catch (err) {
     res.send({
@@ -50,14 +50,14 @@ app.get('/hasReservation', async function (req, res, next) {
 app.get('/reservation', async function (req, res, next) {
   try {
     var email = req.query.email
-    var reservations = await db.query(
+    var reservation = await db.query(
       'SELECT * FROM RESERVATIONS '+
       'WHERE EMPLOYEE_EMAIL = $1 '+
       'AND reservation_date >= $2' +
       'AND status = $3', 
       [email, moment().format(), 'RESERVED'])
     res.send({
-      reservation: reservations.rows[0]
+      reservation: reservation.rows[0]
     })
   } catch (err) {
     res.send({
@@ -66,11 +66,23 @@ app.get('/reservation', async function (req, res, next) {
   }
 })
 
-// async function getReservations (email) {
-//   return await db.query(
-//     'SELECT * FROM RESERVATIONS '+
-//     'WHERE EMPLOYEE_EMAIL = $1 '+
-//     'AND reservation_date >= $2' +
-//     'AND status = "RESERVED"', 
-//     [email, '2021-01-01'])
-// }
+app.get('/reservations', async function (req, res) {
+  const reservations = []
+
+  try {
+    for (i = 0; i < 4; i++) {
+      const reservation = await db.query(
+        `SELECT ID_SEAT FROM RESERVATIONS
+        WHERE reservation_date = $1
+        AND status = $2`,
+        [moment().format().add(i, "days"), 'RESERVED']
+      )
+      reservations.push({reservation: reservation.rows})
+    }
+    res.send(reservations)
+  } catch (err) {
+    res.send({
+      error: err
+    })
+  }
+})
