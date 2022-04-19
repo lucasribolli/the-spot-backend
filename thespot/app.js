@@ -74,8 +74,7 @@ app.get('/reservations', async function (req, res) {
       const reservation = await db.query(
         `SELECT ID_SEAT FROM RESERVATIONS
         WHERE reservation_date = $1
-        AND status = $2`,
-        [moment().format().add(i, "days"), 'RESERVED']
+        AND status = $2`, [moment().format().add(i, "days"), 'RESERVED']
       )
       reservations.push({reservation: reservation.rows})
     }
@@ -86,3 +85,4 @@ app.get('/reservations', async function (req, res) {
     })
   }
 })
+//teste
