@@ -1,12 +1,12 @@
-import pg from "pg"
-import db from "../config/db.js"
+const { Pool } = require('pg')
+const db = require('../config/db')
 
 var connectionString = db.postgresUri;
-const pool = new pg.Pool({
+const pool = new Pool({
   connectionString
 })
 
-const dataBase = {
+module.exports = {
   async query(text, params) {
     const start = Date.now()
     const res = await pool.query(text, params)
@@ -19,5 +19,3 @@ const dataBase = {
     return client
   }
 }
-
-export default dataBase

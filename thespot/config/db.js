@@ -1,12 +1,11 @@
-import dotenv from "dotenv"
-dotenv.config()
+require('dotenv').config();
 
-const getURI = () => {
-   return process.env.NODE_ENV == "production"
-    ? {postgressUri: process.env.PRODUCTION_POSTGRES_URI}
-    : {postgressUri: process.env.DEV_POSTGRES_URI}
+if(process.env.NODE_ENV == "production") {
+    module.exports = {
+        postgresUri: process.env.PRODUCTION_POSTGRES_URI
+    }
+} else {
+    module.exports = {
+        postgresUri: process.env.DEV_POSTGRES_URI
+    }
 }
-
-const db = getURI();
-
-export default db

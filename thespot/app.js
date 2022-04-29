@@ -1,12 +1,12 @@
-import express from "express"
-import cors from "cors"
-import db from "./db/index.js"
-import moment from "moment"
+const express = require('express')
+const cors = require('cors')
+const db = require('./db/index')
+const moment = require('moment')
 
 var app = express()
 app.use(cors())
 app.use(express.json())
-const PORT = process.env.PORT || 4000
+PORT = process.env.PORT || 4000
 
 app.set('port', PORT)
 app.listen(PORT, function () {
