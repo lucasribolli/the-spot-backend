@@ -89,11 +89,33 @@ app.get('/reservations', async function (req, res) {
 app.put('/cancel-reservation', async function (req, res, next) {
   try {
     var reservationId = req.body['reservationId']
-    var cancelReservation = await db.query(
+    await db.query(
       'UPDATE RESERVATIONS '+
       'SET STATUS = $1 '+
       'WHERE id = $2', 
       ['CANCELED', reservationId])
+    res.send({
+      ok: true
+    })
+  } catch (err) {
+    res.send({
+      error: err
+    })
+  }
+})
+
+app.post('/new-reservation', async function (req, res, next) {
+  try {
+    var seatId = req.body['seatId']
+    var userEmail = req.body['userEmail']
+    var reservationDate = req.body['reservationDate']
+    await db.query(
+      'INSERT INTO RESERVATIONS ' + 
+      '(created_at, reservation_date, status, employee_email, id_seat)' + 
+      'VALUES ($1, $2, $3, $4, $5);', 
+      [moment().format(), reservationDate, 'RESERVED', userEmail, seatId])
+    // Gerar QRCode
+    // Enviar email com o QRCode gerado
     res.send({
       ok: true
     })
