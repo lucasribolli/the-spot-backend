@@ -85,4 +85,21 @@ app.get('/reservations', async function (req, res) {
     })
   }
 })
-//teste
+
+app.put('/cancel-reservation', async function (req, res, next) {
+  try {
+    var reservationId = req.body['reservationId']
+    var cancelReservation = await db.query(
+      'UPDATE RESERVATIONS '+
+      'SET STATUS = $1 '+
+      'WHERE id = $2', 
+      ['CANCELED', reservationId])
+    res.send({
+      ok: true
+    })
+  } catch (err) {
+    res.send({
+      error: err
+    })
+  }
+})
