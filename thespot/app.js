@@ -34,7 +34,7 @@ app.get('/hasReservation', async function (req, res, next) {
     var reservation = await db.query(
       'SELECT * FROM RESERVATIONS '+
       'WHERE EMPLOYEE_EMAIL = $1 '+
-      'AND reservation_date >= $2' +
+      'AND reservation_date >= $2 ' +
       'AND status = $3', 
       [email, moment().format(), 'RESERVED'])
     res.send({
@@ -53,7 +53,7 @@ app.get('/reservation', async function (req, res, next) {
     var reservation = await db.query(
       'SELECT * FROM RESERVATIONS '+
       'WHERE EMPLOYEE_EMAIL = $1 '+
-      'AND reservation_date >= $2' +
+      'AND reservation_date >= $2 ' +
       'AND status = $3', 
       [email, moment().format(), 'RESERVED'])
     res.send({
@@ -111,7 +111,7 @@ app.post('/new-reservation', async function (req, res, next) {
     var reservationDate = req.body['reservationDate']
     await db.query(
       'INSERT INTO RESERVATIONS ' + 
-      '(created_at, reservation_date, status, employee_email, id_seat)' + 
+      '(created_at, reservation_date, status, employee_email, id_seat) ' + 
       'VALUES ($1, $2, $3, $4, $5);', 
       [moment().format(), reservationDate, 'RESERVED', userEmail, seatId])
     // Gerar QRCode
@@ -130,19 +130,24 @@ app.get('/seats-data-by-date', async function (req, res, next) {
   try {
     var date = req.query.date
     var allSeats = await db.query('SELECT id FROM SEATS')
+    console.log(1)
     var reservedSeats = await db.query(
       'SELECT id_seat as id FROM RESERVATIONS '+
-      'WHERE reservation_date = $1' +
+      'WHERE reservation_date = $1 ' +
       'AND status = $2', 
       [date, 'RESERVED'])
+    console.log(2)
     var availableSeats = reservedSeats.filter(x => allSeats.indexOf(x) === -1)
+    console.log(3)
     var seatsArray = []
+    console.log(4)
     reservedSeats.map(item => {
       seatsArray.push({
         id: item.id,
         status: 'UNAVAILABLE',
       })
     })
+    console.log(5)
     availableSeats.map(item => {
       seatsArray.push({
         id: item.id,
@@ -150,6 +155,7 @@ app.get('/seats-data-by-date', async function (req, res, next) {
       })
     })
     
+    console.log(6)
     res.send({
       seats: seatsArray.sort((a, b) => a.id > b.id ? 1 : -1)
     })
