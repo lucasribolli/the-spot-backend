@@ -131,9 +131,9 @@ app.get('/seats-data-by-date', async function (req, res, next) {
     var date = req.query.date
     var allSeats = await db.query('SELECT id FROM SEATS')
     var reservedSeats = await db.query(
-      'SELECT id_seat FROM RESERVATIONS '+
+      'SELECT id_seat as id FROM RESERVATIONS '+
       'WHERE reservation_date = $1' +
-      'AND status = $3', 
+      'AND status = $2', 
       [date, 'RESERVED'])
     var availableSeats = reservedSeats.filter(x => allSeats.indexOf(x) === -1)
     var seatsArray = []
@@ -151,7 +151,7 @@ app.get('/seats-data-by-date', async function (req, res, next) {
     })
     
     res.send({
-      seats: availableSeats.sort((a, b) => a.id > b.id ? 1 : -1)
+      seats: seatsArray.sort((a, b) => a.id > b.id ? 1 : -1)
     })
   } catch (err) {
     res.send({
