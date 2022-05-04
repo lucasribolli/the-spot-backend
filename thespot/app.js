@@ -138,6 +138,15 @@ app.get('/seats-data-by-date', async function (req, res, next) {
       [date, 'RESERVED'])
     console.log("reservedSeats", reservedSeats.rows)
     var availableSeats = reservedSeats.rows.filter(x => allSeats.rows.indexOf(x) === -1)
+
+    var availableSeats = allSeats.filter(item1 => {
+      return !reservedSeats.some(item2 => {
+        return item1.id === item2.id;
+      });
+    });
+
+    console.log(availableSeats)
+
     console.log(availableSeats)
     var seatsArray = []
     reservedSeats.rows.map(item => {
