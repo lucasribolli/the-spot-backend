@@ -137,11 +137,11 @@ app.get('/seats-data-by-date', async function (req, res, next) {
       'AND status = $2', 
       [date, 'RESERVED'])
     console.log(2)
-    var availableSeats = reservedSeats.filter(x => allSeats.indexOf(x) === -1)
+    var availableSeats = reservedSeats.rows.filter(x => allSeats.rows.indexOf(x) === -1)
     console.log(3)
     var seatsArray = []
     console.log(4)
-    reservedSeats.map(item => {
+    reservedSeats.rows.map(item => {
       seatsArray.push({
         id: item.id,
         status: 'UNAVAILABLE',
