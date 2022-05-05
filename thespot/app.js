@@ -128,16 +128,22 @@ app.post('/new-reservation', async function (req, res, next) {
 
 app.get('/seats-data-by-date', async function (req, res, next) {
   try {
-    const dayOne = await getSeatsStatusByDate(moment().format())
-    const dayTwo = await getSeatsStatusByDate(moment().format().add(1, "days"))
-    const dayThree = await getSeatsStatusByDate(moment().format().add(2, "days"))
-    const dayFour = await getSeatsStatusByDate(moment().format().add(3, "days"))
+    console.log(1)
+    var dayOne = await getSeatsStatusByDate(moment().format())
+    console.log(2)
+    var dayTwo = await getSeatsStatusByDate(moment().format().add(1, "days"))
+    console.log(3)
+    var dayThree = await getSeatsStatusByDate(moment().format().add(2, "days"))
+    console.log(4)
+    var dayFour = await getSeatsStatusByDate(moment().format().add(3, "days"))
+    console.log(5)
     
-    const allFourDaySeats = []
+    var allFourDaySeats = []
     allFourDaySeats.push(dayOne)
     allFourDaySeats.push(dayTwo)
     allFourDaySeats.push(dayThree)
     allFourDaySeats.push(dayFour)
+    console.log(allFourDaySeats)
     res.send({
       seats: allFourDaySeats
     })
@@ -150,17 +156,21 @@ app.get('/seats-data-by-date', async function (req, res, next) {
 
 const getSeatsStatusByDate = async date => {
   try {
+    console.log(a, date)
     var allSeats = await db.query('SELECT id FROM SEATS')
+    console.log(b)
     var reservedSeats = await db.query(
       'SELECT id_seat as id FROM RESERVATIONS '+
       'WHERE reservation_date = $1 ' +
       'AND status = $2', 
       [date, 'RESERVED'])
+    console.log(c)
     var availableSeats = allSeats.rows.filter(item1 => {
       return !reservedSeats.rows.some(item2 => {
         return item1.id === item2.id;
       });
     });
+    console.log(d)
     var seatsArray = []
     reservedSeats.rows.map(item => {
       seatsArray.push({
@@ -168,12 +178,15 @@ const getSeatsStatusByDate = async date => {
         status: 'UNAVAILABLE',
       })
     })
+    console.log(e)
     availableSeats.map(item => {
       seatsArray.push({
         id: item.id,
         status: 'AVAILABLE',
       })
     })
+    console.log(f)
+    console.log(g, seatsArray.sort((a, b) => a.id > b.id ? 1 : -1))
     
     return seatsArray.sort((a, b) => a.id > b.id ? 1 : -1)
   } catch (err) {
