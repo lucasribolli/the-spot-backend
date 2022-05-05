@@ -128,39 +128,18 @@ app.post('/new-reservation', async function (req, res, next) {
 
 app.get('/seats-data-by-date', async function (req, res, next) {
   try {
-    var date = req.query.date
-    var allSeats = await db.query('SELECT id FROM SEATS')
-    console.log("allSeats", allSeats.rows)
-    var reservedSeats = await db.query(
-      'SELECT id_seat as id FROM RESERVATIONS '+
-      'WHERE reservation_date = $1 ' +
-      'AND status = $2', 
-      [date, 'RESERVED'])
-    console.log("reservedSeats", reservedSeats.rows)
-    var availableSeats = allSeats.rows.filter(item1 => {
-      return !reservedSeats.rows.some(item2 => {
-        return item1.id === item2.id;
-      });
-    });
-    console.log(availableSeats)
-    var seatsArray = []
-    reservedSeats.rows.map(item => {
-      seatsArray.push({
-        id: item.id,
-        status: 'UNAVAILABLE',
-      })
-    })
-    console.log("seatsArray + reservedSeats", seatsArray)
-    availableSeats.map(item => {
-      seatsArray.push({
-        id: item.id,
-        status: 'AVAILABLE',
-      })
-    })
-    console.log("seatsArray + reservedSeats + availableSeats", seatsArray)
+    const dayOne = await getSeatsStatusByDate(moment().format())
+    const dayTwo = await getSeatsStatusByDate(moment().format().add(1, "days"))
+    const dayThree = await getSeatsStatusByDate(moment().format().add(2, "days"))
+    const dayFour = await getSeatsStatusByDate(moment().format().add(3, "days"))
     
+    const allFourDaySeats = []
+    allFourDaySeats.push(dayOne)
+    allFourDaySeats.push(dayTwo)
+    allFourDaySeats.push(dayThree)
+    allFourDaySeats.push(dayFour)
     res.send({
-      seats: seatsArray.sort((a, b) => a.id > b.id ? 1 : -1)
+      seats: allFourDaySeats
     })
   } catch (err) {
     res.send({
@@ -168,3 +147,36 @@ app.get('/seats-data-by-date', async function (req, res, next) {
     })
   }
 })
+
+const getSeatsStatusByDate = async date => {
+  try {
+    var allSeats = await db.query('SELECT id FROM SEATS')
+    var reservedSeats = await db.query(
+      'SELECT id_seat as id FROM RESERVATIONS '+
+      'WHERE reservation_date = $1 ' +
+      'AND status = $2', 
+      [date, 'RESERVED'])
+    var availableSeats = allSeats.rows.filter(item1 => {
+      return !reservedSeats.rows.some(item2 => {
+        return item1.id === item2.id;
+      });
+    });
+    var seatsArray = []
+    reservedSeats.rows.map(item => {
+      seatsArray.push({
+        id: item.id,
+        status: 'UNAVAILABLE',
+      })
+    })
+    availableSeats.map(item => {
+      seatsArray.push({
+        id: item.id,
+        status: 'AVAILABLE',
+      })
+    })
+    
+    return seatsArray.sort((a, b) => a.id > b.id ? 1 : -1)
+  } catch (err) {
+    return err
+  }
+}
