@@ -198,6 +198,12 @@ app.get('/seats-data-by-date', async function (req, res, next) {
 
 app.get('/four-days-seats-data', async function (req, res, next) {
   try {
+    console.log(moment().format())
+    console.log(moment().format().add(1, "days"))
+    console.log(moment().format().add(3, "days"))
+    console.log(await getSeatsStatusByDate(moment().format()))
+    console.log(getSeatsStatusByDate(moment().format()))
+
     var dayOne = await getSeatsStatusByDate(moment().format())
     var dayTwo = await getSeatsStatusByDate(moment().format().add(1, "days"))
     var dayThree = await getSeatsStatusByDate(moment().format().add(2, "days"))
