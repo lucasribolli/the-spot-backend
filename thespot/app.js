@@ -2,6 +2,38 @@ const express = require('express')
 const cors = require('cors')
 const db = require('./db/index')
 const moment = require('moment')
+async function getSeatsStatusByDate (date) {
+  try {
+    var allSeats = await db.query('SELECT id FROM SEATS')
+    var reservedSeats = await db.query(
+      'SELECT id_seat as id FROM RESERVATIONS '+
+      'WHERE reservation_date = $1 ' +
+      'AND status = $2', 
+      [date, 'RESERVED'])
+    var availableSeats = allSeats.rows.filter(item1 => {
+      return !reservedSeats.rows.some(item2 => {
+        return item1.id === item2.id;
+      });
+    });
+    var seatsArray = []
+    reservedSeats.rows.map(item => {
+      seatsArray.push({
+        id: item.id,
+        status: 'UNAVAILABLE',
+      })
+    })
+    availableSeats.map(item => {
+      seatsArray.push({
+        id: item.id,
+        status: 'AVAILABLE',
+      })
+    })
+    
+    return seatsArray.sort((a, b) => a.id > b.id ? 1 : -1)
+  } catch (err) {
+    return err
+  }
+}
 
 var app = express()
 app.use(cors())
@@ -128,22 +160,54 @@ app.post('/new-reservation', async function (req, res, next) {
 
 app.get('/seats-data-by-date', async function (req, res, next) {
   try {
-    console.log(1)
+    var date = req.query.date
+    var allSeats = await db.query('SELECT id FROM SEATS')
+    var reservedSeats = await db.query(
+      'SELECT id_seat as id FROM RESERVATIONS '+
+      'WHERE reservation_date = $1 ' +
+      'AND status = $2', 
+      [date, 'RESERVED'])
+    var availableSeats = allSeats.rows.filter(item1 => {
+      return !reservedSeats.rows.some(item2 => {
+        return item1.id === item2.id;
+      });
+    });
+    var seatsArray = []
+    reservedSeats.rows.map(item => {
+      seatsArray.push({
+        id: item.id,
+        status: 'UNAVAILABLE',
+      })
+    })
+    availableSeats.map(item => {
+      seatsArray.push({
+        id: item.id,
+        status: 'AVAILABLE',
+      })
+    })
+    
+    res.send({
+      seats: seatsArray.sort((a, b) => a.id > b.id ? 1 : -1)
+    })
+  } catch (err) {
+    res.send({
+      error: err
+    })
+  }
+})
+
+app.get('/four-days-seats-data', async function (req, res, next) {
+  try {
     var dayOne = await getSeatsStatusByDate(moment().format())
-    console.log(2)
     var dayTwo = await getSeatsStatusByDate(moment().format().add(1, "days"))
-    console.log(3)
     var dayThree = await getSeatsStatusByDate(moment().format().add(2, "days"))
-    console.log(4)
     var dayFour = await getSeatsStatusByDate(moment().format().add(3, "days"))
-    console.log(5)
     
     var allFourDaySeats = []
     allFourDaySeats.push(dayOne)
     allFourDaySeats.push(dayTwo)
     allFourDaySeats.push(dayThree)
     allFourDaySeats.push(dayFour)
-    console.log(allFourDaySeats)
     res.send({
       seats: allFourDaySeats
     })
@@ -153,43 +217,3 @@ app.get('/seats-data-by-date', async function (req, res, next) {
     })
   }
 })
-
-const getSeatsStatusByDate = async date => {
-  try {
-    console.log(a, date)
-    var allSeats = await db.query('SELECT id FROM SEATS')
-    console.log(b)
-    var reservedSeats = await db.query(
-      'SELECT id_seat as id FROM RESERVATIONS '+
-      'WHERE reservation_date = $1 ' +
-      'AND status = $2', 
-      [date, 'RESERVED'])
-    console.log(c)
-    var availableSeats = allSeats.rows.filter(item1 => {
-      return !reservedSeats.rows.some(item2 => {
-        return item1.id === item2.id;
-      });
-    });
-    console.log(d)
-    var seatsArray = []
-    reservedSeats.rows.map(item => {
-      seatsArray.push({
-        id: item.id,
-        status: 'UNAVAILABLE',
-      })
-    })
-    console.log(e)
-    availableSeats.map(item => {
-      seatsArray.push({
-        id: item.id,
-        status: 'AVAILABLE',
-      })
-    })
-    console.log(f)
-    console.log(g, seatsArray.sort((a, b) => a.id > b.id ? 1 : -1))
-    
-    return seatsArray.sort((a, b) => a.id > b.id ? 1 : -1)
-  } catch (err) {
-    return err
-  }
-}
