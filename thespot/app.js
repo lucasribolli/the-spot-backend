@@ -172,6 +172,10 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
       [moment().format(), reservationDate, 'RESERVED', userEmail, seatId])
 
     console.log("Inicio")
+    console.log(reservation.rows[0])
+    console.log(reservation.rows[0].id)
+    console.log(reservationDate)
+    console.log(seatId)
 
     var qrCodeData = {
       id: reservation.rows[0].id,
