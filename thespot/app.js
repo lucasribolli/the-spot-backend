@@ -171,15 +171,23 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
       'VALUES ($1, $2, $3, $4, $5);', 
       [moment().format(), reservationDate, 'RESERVED', userEmail, seatId])
 
+    console.log("Inicio")
+
     var qrCodeData = {
       id: reservation.rows[0].id,
       date: reservationDate,
       idSeat: seatId
     }
 
+    console.log(0)
+
     var qrCodeImg = await QRCode.toDataURL(JSON.stringify(qrCodeData));
 
+    console.log(1)
+
     var account = await nodemailer.createTestAccount();
+
+    console.log(2)
 
     let transporter = nodemailer.createTransport({
       host: "smtp.ethereal.email",
@@ -191,6 +199,8 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
       },
     });
 
+    console.log(3)
+
     var mailOptions = {
       from: '"Equipe The Spot" <naoresponda@thespot.com>',
       to: userEmail,
@@ -200,6 +210,8 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
       html: 'QR Code de confirmação: </br> <img src="' + qrCodeImg + '">'
     };
 
+    console.log(4)
+
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           res.send({
@@ -207,6 +219,8 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
           })
         }
     });
+
+    console.log(5)
 
     res.send({
       ok: true
