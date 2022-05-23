@@ -144,6 +144,27 @@ app.post('/new-reservation', async function (req, res, next) {
     var seatId = req.body['seatId']
     var userEmail = req.body['userEmail']
     var reservationDate = req.body['reservationDate']
+    await db.query(
+      'INSERT INTO RESERVATIONS ' + 
+      '(created_at, reservation_date, status, employee_email, id_seat) ' + 
+      'VALUES ($1, $2, $3, $4, $5);', 
+      [moment().format(), reservationDate, 'RESERVED', userEmail, seatId])
+
+    res.send({
+      ok: true
+    })
+  } catch (err) {
+    res.send({
+      error: err
+    })
+  }
+})
+
+app.post('/new-reservation-qrcode', async function (req, res, next) {
+  try {
+    var seatId = req.body['seatId']
+    var userEmail = req.body['userEmail']
+    var reservationDate = req.body['reservationDate']
     var reservation = await db.query(
       'INSERT INTO RESERVATIONS ' + 
       '(created_at, reservation_date, status, employee_email, id_seat) ' + 
@@ -182,7 +203,7 @@ app.post('/new-reservation', async function (req, res, next) {
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           res.send({
-            error: error
+            errorqr: error
           })
         }
     });
