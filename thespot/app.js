@@ -2,6 +2,9 @@ const express = require('express')
 const cors = require('cors')
 const db = require('./db/index')
 const moment = require('moment')
+const QRCode = require('qrcode')
+const nodemailer = require("nodemailer");
+
 async function getSeatsStatusByDate (date) {
   try {
     var allSeats = await db.query('SELECT id FROM SEATS')
@@ -141,13 +144,50 @@ app.post('/new-reservation', async function (req, res, next) {
     var seatId = req.body['seatId']
     var userEmail = req.body['userEmail']
     var reservationDate = req.body['reservationDate']
-    await db.query(
+    var reservation = await db.query(
       'INSERT INTO RESERVATIONS ' + 
       '(created_at, reservation_date, status, employee_email, id_seat) ' + 
       'VALUES ($1, $2, $3, $4, $5);', 
       [moment().format(), reservationDate, 'RESERVED', userEmail, seatId])
-    // Gerar QRCode
-    // Enviar email com o QRCode gerado
+
+
+    var qrCodeData = {
+      id: reservation.rows[0].id,
+      date: reservationDate,
+      idSeat: seatId
+    }
+
+    var qrCodeImg = await QRCode.toDataURL(JSON.stringify(qrCodeData));
+
+    var account = await nodemailer.createTestAccount();
+
+    let transporter = nodemailer.createTransport({
+      host: "smtp.ethereal.email",
+      port: 587,
+      secure: false,
+      auth: {
+        user: account.user,
+        pass: account.pass,
+      },
+    });
+
+    var mailOptions = {
+      from: '"Equipe The Spot" <naoresponda@thespot.com>',
+      to: userEmail,
+      subject: 'Confirmação de Reserva de assento.',
+      text: 'Olá! Estamos mandando esse email para confirmar a reserva do assento ' + 
+      seatId + ' no dia ' + moment(reservationDate).format('DD/MM/YYYY') + '.',
+      html: 'QR Code de confirmação: </br> <img src="' + qrCodeImg + '">'
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          res.send({
+            error: error
+          })
+        }
+    });
+
     res.send({
       ok: true
     })
