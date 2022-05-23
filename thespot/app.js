@@ -196,7 +196,11 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
       'Olá! Estamos mandando esse email para confirmar a reserva do assento ' + 
       seatId + ' no dia ' + moment(reservationDate).format('DD/MM/YYYY') + 
       '</br> Segue em anexo o QR Code de confirmação:',
-      contents: new Buffer(qrCodeImg, 'base64')
+      attachments: [
+        {
+          path: qrCodeImg
+        },
+      ]
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
