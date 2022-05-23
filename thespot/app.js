@@ -168,7 +168,7 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
     var reservation = await db.query(
       'INSERT INTO RESERVATIONS ' + 
       '(created_at, reservation_date, status, employee_email, id_seat) ' + 
-      'VALUES ($1, $2, $3, $4, $5);', 
+      'VALUES ($1, $2, $3, $4, $5) RETURNING id;', 
       [moment().format(), reservationDate, 'RESERVED', userEmail, seatId])
 
     console.log("Inicio")
