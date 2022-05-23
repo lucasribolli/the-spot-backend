@@ -150,7 +150,6 @@ app.post('/new-reservation', async function (req, res, next) {
       'VALUES ($1, $2, $3, $4, $5);', 
       [moment().format(), reservationDate, 'RESERVED', userEmail, seatId])
 
-
     var qrCodeData = {
       id: reservation.rows[0].id,
       date: reservationDate,
