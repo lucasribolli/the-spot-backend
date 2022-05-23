@@ -171,35 +171,21 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
       'VALUES ($1, $2, $3, $4, $5) RETURNING id;', 
       [moment().format(), reservationDate, 'RESERVED', userEmail, seatId])
 
-    console.log("Inicio")
-    console.log(reservation)
-    console.log(reservation.rows)
-    console.log(reservation.rows[0].id)
-    console.log(reservationDate)
-    console.log(seatId)
-
     var qrCodeData = {
       id: reservation.rows[0].id,
       date: reservationDate,
       idSeat: seatId
     }
 
-    console.log(0)
-
     var qrCodeImg = await QRCode.toDataURL(JSON.stringify(qrCodeData));
 
-    console.log(2)
-
     var transporter = nodemailer.createTransport({
-      host: "smtp.mailtrap.io",
-      port: 2525,
+      service: 'gmail',
       auth: {
-        user: "83da2643f77466",
-        pass: "9b425e28fa3696"
+        user: 'vnzacheu@gmail.com',
+        pass: 'dqptemvcgyzclhyv'
       }
     });
-
-    console.log(3)
 
     var mailOptions = {
       from: '"Equipe TheSpot" <equipe.thespot@noreply.com>',
@@ -209,10 +195,8 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
       html: 
       'Olá! Estamos mandando esse email para confirmar a reserva do assento ' + 
       seatId + ' no dia ' + moment(reservationDate).format('DD/MM/YYYY') + 
-      '</br>. QR Code de confirmação: </br> <img src="' + qrCodeImg + '">'
+      '</br> QR Code de confirmação: </br> <img src="' + qrCodeImg + '">'
     };
-
-    console.log(4)
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
@@ -221,8 +205,6 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
           })
         }
     });
-
-    console.log(5)
 
     res.send({
       ok: true
