@@ -180,10 +180,11 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
     var qrCodeImg = await QRCode.toDataURL(JSON.stringify(qrCodeData));
 
     var transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: "smtp.mailtrap.io",
+      port: 2525,
       auth: {
-        user: 'vnzacheu@gmail.com',
-        pass: 'dqptemvcgyzclhyv'
+        user: "83da2643f77466",
+        pass: "9b425e28fa3696"
       }
     });
 
