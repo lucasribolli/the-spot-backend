@@ -188,10 +188,6 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
 
     var qrCodeImg = await QRCode.toDataURL(JSON.stringify(qrCodeData));
 
-    console.log(1)
-
-    var account = await nodemailer.createTestAccount();
-
     console.log(2)
 
     var transporter = nodemailer.createTransport({
@@ -206,12 +202,14 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
     console.log(3)
 
     var mailOptions = {
-      from: '"Equipe TheSpot" <from@noreply.com>',
+      from: '"Equipe TheSpot" <equipe.thespot@noreply.com>',
       to: userEmail,
-      subject: 'Confirmação de Reserva de assento.',
-      text: 'Olá! Estamos mandando esse email para confirmar a reserva do assento ' + 
-      seatId + ' no dia ' + moment(reservationDate).format('DD/MM/YYYY') + '.',
-      html: 'QR Code de confirmação: </br> <img src="' + qrCodeImg + '">'
+      subject: 'TheSpot - Confirmação de Reserva',
+      text: 'Reserva feita com sucesso!',
+      html: 
+      'Olá! Estamos mandando esse email para confirmar a reserva do assento ' + 
+      seatId + ' no dia ' + moment(reservationDate).format('DD/MM/YYYY') + 
+      '</br>. QR Code de confirmação: </br> <img src="' + qrCodeImg + '">'
     };
 
     console.log(4)
