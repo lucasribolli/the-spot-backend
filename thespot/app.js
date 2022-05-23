@@ -190,18 +190,24 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
 
     console.log(1)
 
-    var transporter = nodemailer.createTransport({
-      service: 'gmail',
+    var account = await nodemailer.createTestAccount();
+
+    console.log(2)
+
+    let transporter = nodemailer.createTransport({
+      host: "smtp.ethereal.email",
+      port: 587,
+      secure: false,
       auth: {
-        user: 'equipe.thespot@gmail.com',
-        pass: 'Thespot12345'
-      }
+        user: account.user,
+        pass: account.pass,
+      },
     });
 
     console.log(3)
 
     var mailOptions = {
-      from: 'equipe.thespot@gmail.com',
+      from: account.user,
       to: userEmail,
       subject: 'Confirmação de Reserva de assento.',
       text: 'Olá! Estamos mandando esse email para confirmar a reserva do assento ' + 
