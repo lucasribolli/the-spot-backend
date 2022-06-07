@@ -190,7 +190,7 @@ app.post('/new-reservation-qrcode', async function (req, res, next) {
     var mailOptions = {
       from: '"Equipe TheSpot" <equipe.thespot@noreply.com>',
       to: userEmail,
-      subject: 'TheSpot - Confirmação de Reserva',
+      subject: 'TheSpot - Confirmação de Reserva do assento ' + seatId + '.',
       text: 'Reserva feita com sucesso!',
       html: 
       'Olá! Estamos mandando esse email para confirmar a reserva do assento ' + 
