@@ -101,26 +101,6 @@ app.get('/reservation', async function (req, res, next) {
   }
 })
 
-app.get('/reservations', async function (req, res) {
-  const reservations = []
-
-  try {
-    for (i = 0; i < 4; i++) {
-      const reservation = await db.query(
-        `SELECT ID_SEAT FROM RESERVATIONS
-        WHERE reservation_date = $1
-        AND status = $2`, [moment().format().add(i, "days"), 'RESERVED']
-      )
-      reservations.push({reservation: reservation.rows})
-    }
-    res.send(reservations)
-  } catch (err) {
-    res.send({
-      error: err
-    })
-  }
-})
-
 app.put('/cancel-reservation', async function (req, res, next) {
   try {
     var reservationId = req.body['reservationId']
@@ -129,27 +109,6 @@ app.put('/cancel-reservation', async function (req, res, next) {
       'SET STATUS = $1 '+
       'WHERE id = $2', 
       ['CANCELED', reservationId])
-    res.send({
-      ok: true
-    })
-  } catch (err) {
-    res.send({
-      error: err
-    })
-  }
-})
-
-app.post('/new-reservation-without-email', async function (req, res, next) {
-  try {
-    var seatId = req.body['seatId']
-    var userEmail = req.body['userEmail']
-    var reservationDate = req.body['reservationDate']
-    await db.query(
-      'INSERT INTO RESERVATIONS ' + 
-      '(created_at, reservation_date, status, employee_email, id_seat) ' + 
-      'VALUES ($1, $2, $3, $4, $5);', 
-      [moment().format(), reservationDate, 'RESERVED', userEmail, seatId])
-
     res.send({
       ok: true
     })
@@ -171,6 +130,8 @@ app.post('/new-reservation', async function (req, res, next) {
       'VALUES ($1, $2, $3, $4, $5) RETURNING id;', 
       [moment().format(), reservationDate, 'RESERVED', userEmail, seatId])
 
+
+    //Configs QRCode
     var qrCodeData = {
       id: reservation.rows[0].id,
       date: reservationDate,
@@ -179,6 +140,7 @@ app.post('/new-reservation', async function (req, res, next) {
 
     var qrCodeImg = await QRCode.toDataURL(JSON.stringify(qrCodeData));
 
+    //Configs Email
     var transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
