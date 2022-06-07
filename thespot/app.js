@@ -139,7 +139,7 @@ app.put('/cancel-reservation', async function (req, res, next) {
   }
 })
 
-app.post('/new-reservation', async function (req, res, next) {
+app.post('/new-reservation-without-email', async function (req, res, next) {
   try {
     var seatId = req.body['seatId']
     var userEmail = req.body['userEmail']
@@ -160,7 +160,7 @@ app.post('/new-reservation', async function (req, res, next) {
   }
 })
 
-app.post('/new-reservation-qrcode', async function (req, res, next) {
+app.post('/new-reservation', async function (req, res, next) {
   try {
     var seatId = req.body['seatId']
     var userEmail = req.body['userEmail']
