@@ -183,7 +183,7 @@ app.post('/new-reservation', async function (req, res, next) {
       service: 'gmail',
       auth: {
         user: 'noreply.thespot@gmail.com',
-        pass: 'vinicoisalinda'
+        pass: 'axucblvlxlqakgqq'
       }
     });
 
